@@ -92,7 +92,15 @@ async function handleSend(req: Request) {
 
     const outcome = await deliver(attendee);
     return NextResponse.json(
-      { sent: outcome.ok ? 1 : 0, failed: outcome.ok ? 0 : 1, results: [outcome] },
+      {
+        sent: outcome.ok ? 1 : 0,
+        failed: outcome.ok ? 0 : 1,
+        results: [outcome],
+        // The client's fetch wrapper surfaces this top-level field on failure;
+        // without it, a real send error (bad key, unverified domain, ...)
+        // shows up to staff as a meaningless "Request failed (502)".
+        ...(outcome.ok ? {} : { error: outcome.error }),
+      },
       { status: outcome.ok ? 200 : 502 },
     );
   }

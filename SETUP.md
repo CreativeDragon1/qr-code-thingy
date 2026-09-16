@@ -17,7 +17,7 @@ likely to hold you up.
 
 Then find your keys under **Project Settings → API**:
 
-- **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
+- **Project URL** → `SUPABASE_URL`
 - **`service_role` key** (not `anon`) → `SUPABASE_SERVICE_ROLE_KEY`
 
 > The `service_role` key bypasses all database security. It is only ever read by
@@ -56,7 +56,7 @@ cp .env.example .env.local
 
 | Variable                    | What it is                                                |
 |-----------------------------|-----------------------------------------------------------|
-| `NEXT_PUBLIC_SUPABASE_URL`  | From step 1                                               |
+| `SUPABASE_URL`              | From step 1                                               |
 | `SUPABASE_SERVICE_ROLE_KEY` | From step 1 — server-side only                            |
 | `APP_PASSWORD`              | A password you invent. Staff type it once per device      |
 | `TICKET_LINK_SECRET`        | Run `openssl rand -hex 32` and paste the output            |
@@ -231,7 +231,7 @@ redeploy. Nothing else needs to change.
 **"APP_PASSWORD is not set on the server"** — you deployed without setting it in
 Vercel's environment variables. Add it and redeploy.
 
-**"Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY"** — same cause:
+**"Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY"** — same cause:
 the variables exist in your local `.env.local` but were never added to Vercel.
 Add them under Project Settings → Environment Variables, then redeploy. Vercel does
 not pick up new variables until the next deploy.

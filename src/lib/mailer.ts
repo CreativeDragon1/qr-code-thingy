@@ -19,16 +19,17 @@ type ProviderPreset = {
 };
 
 /**
- * Both supported free-tier providers expose a plain SMTP relay, so swapping
- * between them is an env-var change rather than a code change. Set
- * EMAIL_PROVIDER=smtp to point at anything else.
+ * Resend's SMTP relay (smtp.resend.com) requires a verified domain to
+ * authenticate at all — their own docs list it as a hard prerequisite, and in
+ * practice an unverified account gets a flat "535 Authentication credentials
+ * invalid" even with a correct API key. Their HTTP API has no such
+ * requirement: the onboarding@resend.dev test sender works over API with zero
+ * domain setup. So Resend is sent over their API (sendViaResendApi below),
+ * never over SMTP. Brevo verifies a single sender address instead of a whole
+ * domain, so its SMTP relay has no equivalent restriction and stays as-is.
  */
 function resolvePreset(): ProviderPreset {
   const provider = (process.env.EMAIL_PROVIDER ?? "resend").toLowerCase();
-
-  if (provider === "resend") {
-    return { host: "smtp.resend.com", port: 465, secure: true, user: "resend" };
-  }
 
   if (provider === "brevo") {
     const user = process.env.EMAIL_SMTP_USER;
@@ -76,6 +77,59 @@ function fromAddress(): string {
   if (!address) throw new Error("EMAIL_FROM is not set. See SETUP.md.");
   const name = process.env.EMAIL_FROM_NAME;
   return name ? `"${name}" <${address}>` : address;
+}
+
+type Attachment = { filename: string; content: Buffer; cid: string; contentType: string };
+
+type SendArgs = {
+  to: string;
+  subject: string;
+  html: string;
+  text: string;
+  attachments: Attachment[];
+};
+
+async function sendViaResendApi(args: SendArgs): Promise<void> {
+  const apiKey = process.env.EMAIL_API_KEY;
+  if (!apiKey) throw new Error("EMAIL_API_KEY is not set. See SETUP.md.");
+
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: fromAddress(),
+      to: args.to,
+      subject: args.subject,
+      html: args.html,
+      text: args.text,
+      attachments: args.attachments.map((a) => ({
+        filename: a.filename,
+        content: a.content.toString("base64"),
+        content_type: a.contentType,
+        content_id: a.cid,
+      })),
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    const reason = body?.message || `HTTP ${res.status}`;
+    throw new Error(`Resend API rejected the send: ${reason}`);
+  }
+}
+
+async function sendViaSmtp(args: SendArgs): Promise<void> {
+  await getTransport().sendMail({
+    from: fromAddress(),
+    to: args.to,
+    subject: args.subject,
+    html: args.html,
+    text: args.text,
+    attachments: args.attachments,
+  });
 }
 
 /** Cached across warm invocations. `undefined` = not looked up, `null` = absent. */
@@ -128,12 +182,7 @@ export async function sendTicketEmail(attendee: TicketRecipient): Promise<void> 
     hasLogo: logo !== null,
   });
 
-  const attachments: {
-    filename: string;
-    content: Buffer;
-    cid: string;
-    contentType: string;
-  }[] = [
+  const attachments: Attachment[] = [
     {
       filename: `ticket-${attendee.idnum}.png`,
       content: qrPng,
@@ -151,8 +200,7 @@ export async function sendTicketEmail(attendee: TicketRecipient): Promise<void> 
     });
   }
 
-  await getTransport().sendMail({
-    from: fromAddress(),
+  const args: SendArgs = {
     to: attendee.email,
     subject: `Your ${eventName} ticket — ${attendee.name}`,
     html,
@@ -163,5 +211,12 @@ export async function sendTicketEmail(attendee: TicketRecipient): Promise<void> 
       `The QR code is in the HTML version of this email — open it on your ` +
       `phone and show it at the door.\n`,
     attachments,
-  });
+  };
+
+  const provider = (process.env.EMAIL_PROVIDER ?? "resend").toLowerCase();
+  if (provider === "resend") {
+    await sendViaResendApi(args);
+  } else {
+    await sendViaSmtp(args);
+  }
 }
