@@ -1,0 +1,255 @@
+.shell {
+  min-height: 100dvh;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: max(24px, env(safe-area-inset-top)) 20px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.title {
+  font-size: clamp(2rem, 7vw, 2.8rem);
+  font-weight: 800;
+}
+
+.back {
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  padding-top: 8px;
+}
+
+.back:hover {
+  color: var(--white);
+}
+
+/* ------------------------------------------------ stats */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+@media (max-width: 560px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.stat {
+  background: var(--surface);
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.statValue {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.statTeal {
+  color: var(--teal-bright);
+}
+
+.statMint {
+  color: var(--mint);
+}
+
+/* ------------------------------------------------ sender */
+.panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: linear-gradient(180deg, var(--surface), var(--ink-2));
+}
+
+.panelHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.panelTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.panelText {
+  color: var(--muted);
+  font-size: 13px;
+  max-width: 62ch;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.primary {
+  background: var(--mint);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 13px 22px;
+  border-radius: var(--radius);
+}
+
+.primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ghost {
+  border: 1px solid var(--line-strong);
+  padding: 13px 20px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ghost:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.log {
+  font-size: 13px;
+  color: var(--muted);
+  border-left: 2px solid var(--teal);
+  padding-left: 12px;
+  white-space: pre-wrap;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.logError {
+  border-left-color: var(--danger);
+  color: #ff9b9b;
+}
+
+/* ------------------------------------------------ list */
+.search {
+  width: 100%;
+  background: var(--ink-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: 13px 16px;
+  color: var(--white);
+  font-size: 16px;
+}
+
+.search::placeholder {
+  color: var(--muted-dim);
+}
+
+.list {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.who {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.whoName {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.whoMeta {
+  font-size: 12px;
+  color: var(--muted);
+  word-break: break-all;
+}
+
+.chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.chipOn {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: var(--white);
+}
+
+.chipFood {
+  background: var(--mint);
+  border-color: var(--mint);
+  color: var(--ink);
+}
+
+.send {
+  border: 1px solid var(--line-strong);
+  padding: 9px 14px;
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.send:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}

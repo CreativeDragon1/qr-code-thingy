@@ -1,0 +1,154 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: max(28px, env(safe-area-inset-top)) 28px max(28px, env(safe-area-inset-bottom));
+  color: var(--white);
+  animation: slam 200ms var(--ease);
+  cursor: pointer;
+  user-select: none;
+}
+
+.success {
+  background: var(--teal);
+}
+
+.failure {
+  background: var(--danger);
+}
+
+@keyframes slam {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Auto-dismiss countdown. Staff learn to read it as "the screen is about to clear". */
+.timer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.85);
+  animation: drain linear forwards;
+}
+
+@keyframes drain {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.headLabel {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 26px;
+  min-height: 0;
+}
+
+.glyph {
+  width: 76px;
+  height: 76px;
+  flex: none;
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  animation: pop 320ms var(--ease) 60ms backwards;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.glyph svg {
+  width: 38px;
+  height: 38px;
+  stroke: var(--white);
+  stroke-width: 3.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.status {
+  font-size: clamp(2.6rem, 11vw, 4.6rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  max-width: 14ch;
+}
+
+.person {
+  border-top: 1px solid rgba(255, 255, 255, 0.28);
+  padding-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.name {
+  font-size: clamp(1.5rem, 6.5vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  word-break: break-word;
+}
+
+.email {
+  font-size: clamp(0.95rem, 3.6vw, 1.15rem);
+  color: rgba(255, 255, 255, 0.82);
+  word-break: break-all;
+}
+
+.detail {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.idTag {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.dismiss {
+  color: rgba(255, 255, 255, 0.72);
+  text-align: right;
+}

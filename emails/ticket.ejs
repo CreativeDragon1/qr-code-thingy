@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= eventName %> ticket</title>
+</head>
+<body style="margin:0; padding:0; background-color:#EFEDE7; -webkit-font-smoothing:antialiased;">
+
+  <!-- Preview text shown in the inbox list, hidden in the body itself -->
+  <div style="display:none; max-height:0; overflow:hidden; opacity:0; color:transparent; height:0; width:0;">
+    Your entry QR for <%= eventName %> — ID <%= idnum %>. Show this at the door.
+  </div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#EFEDE7;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:100%; background-color:#FFFFFF;">
+
+          <!-- ================= HEADER BAND ================= -->
+          <tr>
+            <td bgcolor="#123638" style="background-color:#123638; padding:28px 36px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <% if (hasLogo) { %>
+                  <td width="48" valign="middle" style="padding-right:14px;">
+                    <img src="cid:<%= logoCid %>" width="48" alt="" style="display:block; width:48px; height:auto; border:0;" />
+                  </td>
+                  <% } %>
+                  <td valign="middle">
+                    <div style="font-family:Helvetica,Arial,sans-serif; font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:#7FB6B8; padding-bottom:5px;">
+                      Admit one
+                    </div>
+                    <div style="font-family:Helvetica,Arial,sans-serif; font-size:21px; font-weight:bold; letter-spacing:-0.3px; color:#FFFFFF;">
+                      <%= eventName %>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ================= NAME ================= -->
+          <tr>
+            <td style="padding:36px 36px 8px 36px;">
+              <div style="font-family:Helvetica,Arial,sans-serif; font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:#8A9A99; padding-bottom:10px;">
+                Ticket holder
+              </div>
+              <div style="font-family:Helvetica,Arial,sans-serif; font-size:32px; line-height:38px; font-weight:bold; letter-spacing:-0.8px; color:#123638;">
+                <%= name %>
+              </div>
+              <div style="font-family:Helvetica,Arial,sans-serif; font-size:14px; line-height:20px; color:#6B7E7D; padding-top:8px;">
+                <%= email %>
+              </div>
+            </td>
+          </tr>
+
+          <% if (eventDate || eventLocation) { %>
+          <!-- ================= WHEN / WHERE ================= -->
+          <tr>
+            <td style="padding:24px 36px 0 36px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #E4E2DC;">
+                <tr>
+                  <% if (eventDate) { %>
+                  <td valign="top" style="padding:18px 12px 0 0;">
+                    <div style="font-family:Helvetica,Arial,sans-serif; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:#8A9A99; padding-bottom:6px;">When</div>
+                    <div style="font-family:Helvetica,Arial,sans-serif; font-size:15px; font-weight:bold; color:#123638;"><%= eventDate %></div>
+                  </td>
+                  <% } %>
+                  <% if (eventLocation) { %>
+                  <td valign="top" style="padding:18px 0 0 0;">
+                    <div style="font-family:Helvetica,Arial,sans-serif; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:#8A9A99; padding-bottom:6px;">Where</div>
+                    <div style="font-family:Helvetica,Arial,sans-serif; font-size:15px; font-weight:bold; color:#123638;"><%= eventLocation %></div>
+                  </td>
+                  <% } %>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <% } %>
+
+          <!-- ================= PERFORATION ================= -->
+          <tr>
+            <td style="padding:30px 36px 0 36px;">
+              <div style="border-top:2px dashed #D6D3CB; font-size:0; line-height:0;">&nbsp;</div>
+            </td>
+          </tr>
+
+          <!-- ================= THE QR CODE =================
+               cid:<%= qrCid %> is the ticket itself. Do not replace this with a
+               hosted <img src="https://..."> — it must stay embedded so it
+               renders with images blocked and without an internet round-trip. -->
+          <tr>
+            <td align="center" style="padding:30px 36px 8px 36px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" bgcolor="#FFFFFF" style="background-color:#FFFFFF; border:1px solid #E4E2DC; padding:18px;">
+                    <img src="cid:<%= qrCid %>" width="220" height="220"
+                         alt="Entry QR code for <%= name %>"
+                         style="display:block; width:220px; height:220px; border:0;" />
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ================= ID ================= -->
+          <tr>
+            <td align="center" style="padding:14px 36px 0 36px;">
+              <div style="font-family:Helvetica,Arial,sans-serif; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:#8A9A99; padding-bottom:6px;">
+                Attendee ID
+              </div>
+              <div style="font-family:'Courier New',Courier,monospace; font-size:22px; font-weight:bold; letter-spacing:3px; color:#123638;">
+                <%= idnum %>
+              </div>
+            </td>
+          </tr>
+
+          <!-- ================= INSTRUCTIONS ================= -->
+          <tr>
+            <td style="padding:28px 36px 0 36px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#F4F6F5" style="background-color:#F4F6F5;">
+                <tr>
+                  <td style="padding:18px 20px; border-left:3px solid #256C70;">
+                    <div style="font-family:Helvetica,Arial,sans-serif; font-size:14px; line-height:22px; color:#3E5250;">
+                      Open this email on your phone at the entrance and show the QR code
+                      to a volunteer. The same code is scanned once to check you in and
+                      once more to collect your food — no need to keep anything else.
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ================= FOOTER ================= -->
+          <tr>
+            <td style="padding:28px 36px 36px 36px;">
+              <div style="border-top:1px solid #E4E2DC; padding-top:18px; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:19px; color:#93A3A2;">
+                This ticket was issued to <%= email %> and is valid for one person.
+                If you did not sign up for <%= eventName %>, you can ignore this email.
+              </div>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+:root {
+  /* Brand palette. #123638 and #256C70 are the club's; the rest are derived
+     shades of the same two hues so the whole app stays in one colour family. */
+  --ink: #071a1c;
+  --ink-2: #0c2528;
+  --surface: #123638;
+  --surface-2: #1a4a4d;
+  --teal: #256c70;
+  --teal-bright: #47a7ad;
+  --mint: #7de0c0;
+  --white: #ffffff;
+
+  --danger: #d32f2f;
+  --danger-deep: #9e1f1f;
+
+  --line: rgba(255, 255, 255, 0.11);
+  --line-strong: rgba(255, 255, 255, 0.2);
+  --muted: rgba(226, 240, 239, 0.58);
+  --muted-dim: rgba(226, 240, 239, 0.36);
+
+  --radius: 6px;
+  --radius-lg: 22px;
+
+  --ease: cubic-bezier(0.2, 0.9, 0.25, 1);
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--ink);
+  color: var(--white);
+}
+
+body {
+  font-family: var(--font-ui), ui-sans-serif, system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--mint);
+  outline-offset: 3px;
+}
+
+/* Micro-label: uppercase, wide tracking. Used for every field label in the app. */
+.eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-dim);
+}
+
+.mono {
+  font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.display {
+  font-family: var(--font-display), var(--font-ui), sans-serif;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
