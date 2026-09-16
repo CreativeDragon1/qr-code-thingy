@@ -59,6 +59,7 @@ cp .env.example .env.local
 | `NEXT_PUBLIC_SUPABASE_URL`  | From step 1                                               |
 | `SUPABASE_SERVICE_ROLE_KEY` | From step 1 — server-side only                            |
 | `APP_PASSWORD`              | A password you invent. Staff type it once per device      |
+| `TICKET_LINK_SECRET`        | Run `openssl rand -hex 32` and paste the output            |
 | `EMAIL_PROVIDER`            | `resend` or `brevo`                                       |
 | `EMAIL_API_KEY`             | From step 4                                               |
 | `EMAIL_SMTP_USER`           | Brevo only — leave blank for Resend                       |
@@ -68,6 +69,11 @@ cp .env.example .env.local
 **About `APP_PASSWORD`:** without it, anyone who finds your web address can mark
 attendees as present and email your entire attendee list. Make it long, share it
 with your volunteers, and change it after the event.
+
+**About `TICKET_LINK_SECRET`:** this signs the manual ticket link described in
+step 8 below. It has nothing to do with `APP_PASSWORD` — don't reuse the same
+value for both. Once set, don't change it mid-event: any links already sent out
+would stop working.
 
 ---
 
@@ -129,7 +135,30 @@ without a logo.
 
 ---
 
-## 8. Run it locally
+## 8. Manual ticket fallback (in case an email fails)
+
+Every attendee also has a private ticket page that doesn't depend on email at
+all: `/ticket/{idnum}/{a long signed code}`. It shows the same ticket — name,
+QR code, ID — and has a **Download ticket as image** button that saves a PNG
+you can AirDrop, text, or WhatsApp directly.
+
+You never type this link by hand. On `/admin`, press **Manual ticket** next to
+any attendee's name — it appears inline with **Copy** and **Open** buttons.
+Use this when:
+
+- an email bounces or lands somewhere the attendee can't find it
+- someone lost their ticket and needs a replacement on the spot
+- you want to hand someone their ticket directly from your own phone, no
+  internet round-trip to an inbox required
+
+The link only works for that one attendee — it's cryptographically signed with
+`TICKET_LINK_SECRET`, so nobody can guess another person's link by changing the
+ID in the URL. It does **not** expire and does **not** require the `APP_PASSWORD`,
+because the attendee opens it directly, not a staff member.
+
+---
+
+## 9. Run it locally
 
 ```bash
 npm install
@@ -150,12 +179,12 @@ A quick check that everything is wired up:
    because food is tracked separately.
 
 > The camera only works over HTTPS or on `localhost`. If you want to test from your
-> phone against your laptop, deploy to Vercel first (step 9) rather than using
+> phone against your laptop, deploy to Vercel first (step 10) rather than using
 > your laptop's local IP address — browsers block the camera on plain `http://`.
 
 ---
 
-## 9. Deploy to Vercel
+## 10. Deploy to Vercel
 
 1. Push this project to GitHub.
 2. At [vercel.com](https://vercel.com), **Add New → Project**, and import the repo.
@@ -177,6 +206,8 @@ HTTPS is automatic on Vercel, which is what makes the phone camera work.
   change the others — check each device is in the right mode before you start.
 - If a phone's camera fails, press **Enter an ID by hand** and type the number.
 - `/admin` shows live counts and lets you resend a ticket to anyone who lost theirs.
+- If someone's email never arrives, press **Manual ticket** on their row instead
+  of troubleshooting email — it gets them a working QR code immediately.
 
 ---
 
@@ -213,6 +244,13 @@ the domain is verified, and that DMARC is present, not just SPF and DKIM.
 
 **Sending stops partway through** — the free tier's daily cap. Wait until it resets
 and press the send button again; already-sent people are skipped automatically.
+
+**"TICKET_LINK_SECRET is not set on the server"** — same cause as the two errors
+above: add it in Vercel's Environment Variables and redeploy.
+
+**A manual ticket link says "not valid"** — either it was copied incorrectly (it's
+long; copy the whole thing, don't retype it), or `TICKET_LINK_SECRET` was changed
+after the link was generated. Press **Manual ticket** again to get a fresh one.
 
 **The camera never starts** — check the address bar says `https://`, then check
 the browser's site permissions for camera access.

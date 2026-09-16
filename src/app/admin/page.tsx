@@ -30,6 +30,9 @@ export default function AdminPage() {
   const [search, setSearch] = useState("");
   const [sending, setSending] = useState(false);
   const [log, setLog] = useState<{ text: string; error: boolean } | null>(null);
+  const [links, setLinks] = useState<Record<string, string>>({});
+  const [linkBusy, setLinkBusy] = useState<string | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
 
   const load = useCallback(async (q: string) => {
     try {
@@ -64,6 +67,39 @@ export default function AdminPage() {
       setLog({ text: err instanceof Error ? err.message : "Send failed.", error: true });
     } finally {
       setSending(false);
+    }
+  }
+
+  /**
+   * The fallback for when email fails: mint a signed link to that attendee's
+   * public ticket page and let staff copy or open it directly. Cached per row
+   * so re-opening the panel doesn't re-mint (harmless, but pointless).
+   */
+  async function getManualLink(row: Row) {
+    if (links[row.idnum]) return;
+    setLinkBusy(row.idnum);
+    try {
+      const res = await api<{ path: string }>("/api/ticket-link", {
+        method: "POST",
+        body: JSON.stringify({ idnum: row.idnum }),
+      });
+      setLinks((prev) => ({ ...prev, [row.idnum]: `${window.location.origin}${res.path}` }));
+    } catch (err) {
+      setLog({ text: err instanceof Error ? err.message : "Could not create link.", error: true });
+    } finally {
+      setLinkBusy(null);
+    }
+  }
+
+  async function copyLink(idnum: string) {
+    const url = links[idnum];
+    if (!url) return;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(idnum);
+      setTimeout(() => setCopied((c) => (c === idnum ? null : c)), 1800);
+    } catch {
+      setLog({ text: "Could not copy — select and copy the link manually.", error: true });
     }
   }
 
@@ -193,37 +229,71 @@ export default function AdminPage() {
             </p>
           ) : (
             rows.map((row) => (
-              <div key={row.idnum} className={styles.item}>
-                <div className={styles.who}>
-                  <span className={styles.whoName}>{row.name}</span>
-                  <span className={styles.whoMeta}>
-                    <span className="mono">{row.idnum}</span> · {row.email}
-                  </span>
+              <div key={row.idnum} className={styles.itemWrap}>
+                <div className={styles.item}>
+                  <div className={styles.who}>
+                    <span className={styles.whoName}>{row.name}</span>
+                    <span className={styles.whoMeta}>
+                      <span className="mono">{row.idnum}</span> · {row.email}
+                    </span>
+                  </div>
+
+                  <div className={styles.chips}>
+                    <span
+                      className={`${styles.chip} ${row.registered_at ? styles.chipOn : ""}`}
+                    >
+                      {row.registered_at ? "Checked in" : "Not in"}
+                    </span>
+                    <span
+                      className={`${styles.chip} ${row.food_collected_at ? styles.chipFood : ""}`}
+                    >
+                      {row.food_collected_at ? "Fed" : "No food"}
+                    </span>
+                    <span className={styles.chip}>
+                      {row.qr_sent_at ? "Ticket sent" : "Unsent"}
+                    </span>
+                  </div>
+
+                  <div className={styles.rowActions}>
+                    <button
+                      className={styles.ghostSmall}
+                      onClick={() => void getManualLink(row)}
+                      disabled={linkBusy === row.idnum}
+                    >
+                      {linkBusy === row.idnum ? "…" : "Manual ticket"}
+                    </button>
+                    <button
+                      className={styles.send}
+                      onClick={() => void sendOne(row)}
+                      disabled={sending}
+                    >
+                      {row.qr_sent_at ? "Resend" : "Send ticket"}
+                    </button>
+                  </div>
                 </div>
 
-                <div className={styles.chips}>
-                  <span
-                    className={`${styles.chip} ${row.registered_at ? styles.chipOn : ""}`}
-                  >
-                    {row.registered_at ? "Checked in" : "Not in"}
-                  </span>
-                  <span
-                    className={`${styles.chip} ${row.food_collected_at ? styles.chipFood : ""}`}
-                  >
-                    {row.food_collected_at ? "Fed" : "No food"}
-                  </span>
-                  <span className={styles.chip}>
-                    {row.qr_sent_at ? "Ticket sent" : "Unsent"}
-                  </span>
-                </div>
-
-                <button
-                  className={styles.send}
-                  onClick={() => void sendOne(row)}
-                  disabled={sending}
-                >
-                  {row.qr_sent_at ? "Resend" : "Send ticket"}
-                </button>
+                {links[row.idnum] ? (
+                  <div className={styles.linkRow}>
+                    <input
+                      className={styles.linkInput}
+                      value={links[row.idnum]}
+                      readOnly
+                      onFocus={(e) => e.currentTarget.select()}
+                      aria-label={`Ticket link for ${row.name}`}
+                    />
+                    <button className={styles.ghostSmall} onClick={() => void copyLink(row.idnum)}>
+                      {copied === row.idnum ? "Copied" : "Copy"}
+                    </button>
+                    <a
+                      className={styles.ghostSmall}
+                      href={links[row.idnum]}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Open
+                    </a>
+                  </div>
+                ) : null}
               </div>
             ))
           )}
