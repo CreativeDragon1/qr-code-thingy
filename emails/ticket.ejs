@@ -85,6 +85,30 @@
           </tr>
           <% } %>
 
+          <% if (committee || breakoutLocation) { %>
+          <!-- ================= BREAKOUT SESSION ================= -->
+          <tr>
+            <td style="padding:18px 36px 0 36px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #E4E2DC;">
+                <tr>
+                  <% if (committee) { %>
+                  <td valign="top" style="padding:18px 18px 0 0; width:50%;">
+                    <div style="font-family:Helvetica,Arial,sans-serif; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:#8A9A99; padding-bottom:6px;">Breakout session</div>
+                    <div style="font-family:Helvetica,Arial,sans-serif; font-size:15px; font-weight:bold; color:#123638;"><%= committee %></div>
+                  </td>
+                  <% } %>
+                  <% if (breakoutLocation) { %>
+                  <td valign="top" style="padding:18px 0 0 18px; width:50%;">
+                    <div style="font-family:Helvetica,Arial,sans-serif; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:#8A9A99; padding-bottom:6px;">Room</div>
+                    <div style="font-family:Helvetica,Arial,sans-serif; font-size:15px; font-weight:bold; color:#123638;"><%= breakoutLocation %></div>
+                  </td>
+                  <% } %>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <% } %>
+
           <% if (hasCalendarInvite) { %>
           <!-- ================= ADD TO CALENDAR =================
                event.ics is attached separately below (see mailer.ts) — Apple

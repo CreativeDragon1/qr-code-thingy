@@ -75,7 +75,7 @@ async function handleSend(req: Request) {
   if (typeof idnum === "string" && idnum.length > 0) {
     const { data: attendee, error } = await sb
       .from("attendees")
-      .select("idnum, name, email, qr_sent_at")
+      .select("idnum, name, email, committee, location, qr_sent_at")
       .eq("idnum", idnum)
       .maybeSingle();
 
@@ -122,7 +122,7 @@ async function handleSend(req: Request) {
 
     const { data: pending, error } = await sb
       .from("attendees")
-      .select("idnum, name, email")
+      .select("idnum, name, email, committee, location")
       .is("qr_sent_at", null)
       .not("email", "is", null)
       .order("created_at", { ascending: true })

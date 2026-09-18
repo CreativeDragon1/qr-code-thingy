@@ -152,6 +152,8 @@ export type TicketRecipient = {
   idnum: string;
   name: string;
   email: string;
+  committee?: string | null;
+  location?: string | null;
 };
 
 export async function sendTicketEmail(attendee: TicketRecipient): Promise<void> {
@@ -199,6 +201,8 @@ export async function sendTicketEmail(attendee: TicketRecipient): Promise<void> 
     hasLogo: logo !== null,
     googleCalendarUrl: calendarEvent ? buildGoogleCalendarUrl(calendarEvent) : null,
     hasCalendarInvite: calendarEvent !== null,
+    committee: attendee.committee || "",
+    breakoutLocation: attendee.location || "",
   });
 
   const attachments: Attachment[] = [

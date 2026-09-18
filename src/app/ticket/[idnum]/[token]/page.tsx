@@ -24,7 +24,7 @@ export default async function TicketPage({
 
   const { data: attendee } = await supabaseAdmin()
     .from("attendees")
-    .select("idnum, name, email")
+    .select("idnum, name, email, committee, location")
     .eq("idnum", idnum)
     .maybeSingle();
 
@@ -46,6 +46,8 @@ export default async function TicketPage({
       eventName={process.env.EVENT_NAME || "Sustainability Sphere"}
       eventDate={process.env.EVENT_DATE || ""}
       eventLocation={process.env.EVENT_LOCATION || ""}
+      committee={attendee.committee}
+      breakoutLocation={attendee.location}
     />
   );
 }

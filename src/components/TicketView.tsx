@@ -11,10 +11,22 @@ export type TicketViewProps = {
   eventName: string;
   eventDate: string;
   eventLocation: string;
+  committee?: string | null;
+  breakoutLocation?: string | null;
 };
 
 export default function TicketView(props: TicketViewProps) {
-  const { name, email, idnum, qrDataUrl, eventName, eventDate, eventLocation } = props;
+  const {
+    name,
+    email,
+    idnum,
+    qrDataUrl,
+    eventName,
+    eventDate,
+    eventLocation,
+    committee,
+    breakoutLocation,
+  } = props;
   const cardRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,6 +80,23 @@ export default function TicketView(props: TicketViewProps) {
               <div className={styles.metaCol}>
                 <span className={styles.label}>Where</span>
                 <span className={styles.metaValue}>{eventLocation}</span>
+              </div>
+            ) : null}
+          </div>
+        )}
+
+        {(committee || breakoutLocation) && (
+          <div className={styles.metaRow}>
+            {committee ? (
+              <div className={styles.metaCol}>
+                <span className={styles.label}>Breakout session</span>
+                <span className={styles.metaValue}>{committee}</span>
+              </div>
+            ) : null}
+            {breakoutLocation ? (
+              <div className={styles.metaCol}>
+                <span className={styles.label}>Room</span>
+                <span className={styles.metaValue}>{breakoutLocation}</span>
               </div>
             ) : null}
           </div>
