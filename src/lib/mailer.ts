@@ -4,6 +4,7 @@ import ejs from "ejs";
 import nodemailer, { type Transporter } from "nodemailer";
 import QRCode from "qrcode";
 import { buildQrPayload } from "./qr";
+import { buildGoogleCalendarUrl, buildIcs } from "./ics";
 
 export const QR_CID = "qrcode";
 export const LOGO_CID = "logo";
@@ -79,7 +80,7 @@ function fromAddress(): string {
   return name ? `"${name}" <${address}>` : address;
 }
 
-type Attachment = { filename: string; content: Buffer; cid: string; contentType: string };
+type Attachment = { filename: string; content: Buffer; cid?: string; contentType: string };
 
 type SendArgs = {
   to: string;
@@ -169,6 +170,22 @@ export async function sendTicketEmail(attendee: TicketRecipient): Promise<void> 
   const logo = await loadLogo();
 
   const eventName = process.env.EVENT_NAME || "Sustainability Sphere";
+  const eventLocation = process.env.EVENT_LOCATION || "";
+
+  // Calendar invite is opt-in: EVENT_START_ISO must be a real datetime (e.g.
+  // "2026-10-04T09:00:00+08:00"), unlike EVENT_DATE which is free-text for
+  // display only and may not be parseable.
+  const eventStartIso = process.env.EVENT_START_ISO || "";
+  const calendarEvent = eventStartIso
+    ? {
+        uid: `${attendee.idnum}@sustainability-sphere`,
+        title: eventName,
+        description: `Your ticket ID is ${attendee.idnum}.`,
+        location: eventLocation || undefined,
+        startIso: eventStartIso,
+        endIso: process.env.EVENT_END_ISO || undefined,
+      }
+    : null;
 
   const html = await ejs.renderFile(TEMPLATE_PATH, {
     name: attendee.name,
@@ -176,10 +193,12 @@ export async function sendTicketEmail(attendee: TicketRecipient): Promise<void> 
     idnum: attendee.idnum,
     eventName,
     eventDate: process.env.EVENT_DATE || "",
-    eventLocation: process.env.EVENT_LOCATION || "",
+    eventLocation,
     qrCid: QR_CID,
     logoCid: LOGO_CID,
     hasLogo: logo !== null,
+    googleCalendarUrl: calendarEvent ? buildGoogleCalendarUrl(calendarEvent) : null,
+    hasCalendarInvite: calendarEvent !== null,
   });
 
   const attachments: Attachment[] = [
@@ -197,6 +216,14 @@ export async function sendTicketEmail(attendee: TicketRecipient): Promise<void> 
       content: logo,
       cid: LOGO_CID,
       contentType: "image/png",
+    });
+  }
+
+  if (calendarEvent) {
+    attachments.push({
+      filename: "event.ics",
+      content: Buffer.from(buildIcs(calendarEvent), "utf-8"),
+      contentType: "text/calendar; method=PUBLISH; charset=UTF-8",
     });
   }
 

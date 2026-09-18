@@ -80,6 +80,28 @@
           </tr>
           <% } %>
 
+          <% if (hasCalendarInvite) { %>
+          <!-- ================= ADD TO CALENDAR =================
+               event.ics is attached separately below (see mailer.ts) — Apple
+               Mail and Outlook desktop pick that up natively as an "Add to
+               Calendar" action. The button here covers Gmail/Google Calendar,
+               which does not surface attached .ics files the same way. -->
+          <tr>
+            <td align="center" style="padding:18px 36px 0 36px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td bgcolor="#FFFFFF" style="background-color:#FFFFFF; border:1px solid #256C70; border-radius:4px;">
+                    <a href="<%= googleCalendarUrl %>" target="_blank"
+                       style="display:block; padding:10px 20px; font-family:Helvetica,Arial,sans-serif; font-size:13px; font-weight:bold; color:#256C70; text-decoration:none;">
+                      + Add to Calendar
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <% } %>
+
           <!-- ================= PERFORATION ================= -->
           <tr>
             <td style="padding:30px 36px 0 36px;">

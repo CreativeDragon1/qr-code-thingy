@@ -65,6 +65,7 @@ cp .env.example .env.local
 | `EMAIL_SMTP_USER`           | Brevo only — leave blank for Resend                       |
 | `EMAIL_FROM`                | `sustainabilitysphere@giisclubs.org`                      |
 | `EVENT_NAME` / `EVENT_DATE` / `EVENT_LOCATION` | Shown on the ticket email      |
+| `EVENT_START_ISO` / `EVENT_END_ISO` | Optional — real ISO datetime (e.g. `2026-10-04T09:00:00+08:00`). Set `EVENT_START_ISO` to add an "Add to Calendar" button + `.ics` attachment; leave blank to skip. `EVENT_END_ISO` defaults to 3 hours later. |
 
 **About `APP_PASSWORD`:** without it, anyone who finds your web address can mark
 attendees as present and email your entire attendee list. Make it long, share it

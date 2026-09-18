@@ -16,6 +16,12 @@ create table if not exists attendees (
   created_at timestamptz default now()
 );
 
+-- Which committee/group the attendee belongs to (e.g. "S4-32 — Reclaimed Land &
+-- Coastal Protection") and where that committee is located on the GIIS campus.
+-- Both nullable: not every attendee has a location on file yet.
+alter table attendees add column if not exists committee text;
+alter table attendees add column if not exists location text;
+
 -- scan_logs: audit trail of every scan attempt, valid or not.
 -- NOTE: for result = 'invalid_format' there is no real attendee id, so the
 -- idnum column holds the raw scanned string (truncated). That is deliberate —

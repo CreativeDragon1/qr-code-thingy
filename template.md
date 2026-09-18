@@ -19,6 +19,21 @@ You do not need to know how to code to change the wording, colours or layout in
 | `<%= eventLocation %>`  | From `EVENT_LOCATION`. Leave blank to hide the row            |
 | `cid:qrcode`            | The generated QR code image (do not edit)                     |
 | `cid:logo`              | Club logo (replace the file, keep the cid)                    |
+| `hasCalendarInvite`     | True when `EVENT_START_ISO` is set — controls the "Add to Calendar" button |
+| `googleCalendarUrl`     | Google Calendar "quick add" link (only set when `hasCalendarInvite` is true) |
+
+## Add to Calendar
+
+Set `EVENT_START_ISO` (and optionally `EVENT_END_ISO`) in your environment to turn
+this on — see [SETUP.md](SETUP.md). When it's set, every ticket email gets:
+
+- An **"Add to Calendar" button** in the body, linking to Google Calendar
+- A real **`event.ics` file attached** to the email, which Apple Mail and Outlook
+  desktop offer to add automatically without the button
+
+This is a plain calendar reminder, not an Apple Wallet pass — Apple Wallet passes
+must be cryptographically signed with a paid Apple Developer certificate, which
+this project does not set up.
 
 ## The two images
 
