@@ -3,6 +3,7 @@ import { requireAuth } from "@/lib/auth";
 import { serverFailure } from "@/lib/http";
 import { supabaseAdmin } from "@/lib/supabase";
 import { ticketPath } from "@/lib/ticketLink";
+import { accessTicketPath } from "@/lib/accessCode";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
 
     const { data: attendee, error } = await supabaseAdmin()
       .from("attendees")
-      .select("idnum")
+      .select("idnum, access_code")
       .eq("idnum", idnum)
       .maybeSingle();
 
@@ -32,7 +33,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: `No attendee with ID ${idnum}.` }, { status: 404 });
     }
 
-    return NextResponse.json({ path: ticketPath(idnum) });
+    // Attendees with no email get a short, typeable code instead of the long
+    // signed link — see src/app/t/[code]/page.tsx.
+    const path = attendee.access_code
+      ? accessTicketPath(attendee.access_code)
+      : ticketPath(idnum);
+
+    return NextResponse.json({ path });
   } catch (err) {
     return serverFailure(err);
   }

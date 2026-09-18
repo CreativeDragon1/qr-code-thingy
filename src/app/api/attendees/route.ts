@@ -46,7 +46,8 @@ async function listAttendees(req: Request) {
     sb
       .from("attendees")
       .select("idnum", { count: "exact", head: true })
-      .is("qr_sent_at", null),
+      .is("qr_sent_at", null)
+      .not("email", "is", null),
   ]);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

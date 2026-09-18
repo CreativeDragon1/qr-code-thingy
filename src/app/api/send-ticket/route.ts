@@ -89,6 +89,12 @@ async function handleSend(req: Request) {
         { status: 409 },
       );
     }
+    if (!attendee.email) {
+      return NextResponse.json(
+        { error: "No email on file for this attendee — use their /t/ access-code link instead." },
+        { status: 400 },
+      );
+    }
 
     const outcome = await deliver(attendee);
     return NextResponse.json(
@@ -118,6 +124,7 @@ async function handleSend(req: Request) {
       .from("attendees")
       .select("idnum, name, email")
       .is("qr_sent_at", null)
+      .not("email", "is", null)
       .order("created_at", { ascending: true })
       .limit(size);
 
@@ -132,7 +139,8 @@ async function handleSend(req: Request) {
     const { count } = await sb
       .from("attendees")
       .select("idnum", { count: "exact", head: true })
-      .is("qr_sent_at", null);
+      .is("qr_sent_at", null)
+      .not("email", "is", null);
 
     return NextResponse.json({
       sent: results.filter((r) => r.ok).length,

@@ -26,9 +26,12 @@ export type Attendee = {
   id: string;
   idnum: string;
   name: string;
-  email: string;
+  email: string | null;
   registered_at: string | null;
   food_collected_at: string | null;
   qr_sent_at: string | null;
   created_at: string;
+  committee: string | null;
+  location: string | null;
+  access_code: string | null;
 };

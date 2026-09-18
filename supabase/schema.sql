@@ -22,6 +22,16 @@ create table if not exists attendees (
 alter table attendees add column if not exists committee text;
 alter table attendees add column if not exists location text;
 
+-- Some attendees have no email on file, so email can no longer be required —
+-- they get their ticket through the short /t/{access_code} link instead
+-- (see src/app/t/[code]/page.tsx), which needs no email to hand out.
+alter table attendees alter column email drop not null;
+
+-- Short random code for attendees without an email — a typeable alternative
+-- to the emailed QR / the long signed /ticket/{idnum}/{token} link. Null for
+-- everyone else.
+alter table attendees add column if not exists access_code text unique;
+
 -- scan_logs: audit trail of every scan attempt, valid or not.
 -- NOTE: for result = 'invalid_format' there is no real attendee id, so the
 -- idnum column holds the raw scanned string (truncated). That is deliberate —
